@@ -1,17 +1,21 @@
-var inidata = {"blocks": {
+var inidata = {
+    "post_url": "http://google.com/",
+    "text_submit": "Find",
+    "text_show" : "Show",
+    "blocks": {
         "block1":{
-            "title":"Брэнды",
+            "title":"Brands",
             "type": "checkbox",
             "hideBlock": false,
             "items":{"nokia":"Nokia",15:"Samsung",45:"Simens","ap":"Apple"}
         },
         "block2":{
-            "title":"Диагональ экрана",
+            "title":"Screen size",
             "type": "checkbox",
             "items":['11"','13"','14"','15.6"']
         },
         "block3":{
-            "title":"Цена",
+            "title":"Price",
             "type": "slider",
             "hideBlock": true,
             "min": 200,
@@ -22,24 +26,13 @@ var settings = {
     "hideBlock": true,
     "min":0,
     "max":10,
-    "step":1
+    "step":1,
+    "text_submit": "Find",
+    "text_show" : "Show",
+    "count_url": ""
 }
 $(document).ready(function() {
-    
     init(inidata);
-    
-    $(".filter-search-check").click(function(){
-        var pos = $(this).position();
-        $(".filter-search-result").css("margin-top",pos.top);
-        $(".filter-search-result").css("display", "block");
-        if ($('.filter-search-check:checked').length == 0) {
-            $(".filter-search-result").fadeOut(1000);
-        }
-    });
-
-    $(".filter-search-caption").click(function(){
-        toggleFields($(this));
-    });
 });
 
 function toggleFields(e, action) {
@@ -68,14 +61,15 @@ function toggleFields(e, action) {
 }
 
 function init(dat) {
+    $('#filter-box').prepend("<form id='filter-search-form' name='fdfd' method='GET' action='"+dat["post_url"]+"' >");
     $.each(dat["blocks"], function(index, value){
         var local_setting = {};
-        var bl = "<div class='filter-search-block'>";
+        var bl = "<div id='"+index+"' class='filter-search-block'>";
         bl += '<span class="filter-search-caption"><i class="filter-search-arrow"></i>' + value["title"] + '</span><br/>';
-        bl += '<div class="filter-search-fields ' + value["type"] +'">';
+        bl += '<div class="filter-search-fields" data-block-type="' + value["type"] +'">';
         if (value["type"] == "checkbox") {
             $.each(value["items"], function(ind,val) {
-                bl += "<input type='checkbox' class='filter-search-check' value='" + ind + "' /> " + val + "<br />"
+                bl += "<input id='"+index+ind+"' type='checkbox' class='filter-search-check' name='"+index+"["+ind+"]' value='" + ind + "' /> " + val + "<br />"
             });
         } else if (value["type"] == "slider") {
             if (typeof(value["min"]) != "undefined") {
@@ -93,7 +87,7 @@ function init(dat) {
             } else {
                 local_setting["step"] = settings["step"];
             }
-            bl += "<div>from <input type='text' class='sliderValue' data-index='0' value='"+local_setting["min"]+"' /> to <input type='text' class='sliderValue' data-index='1' value='"+local_setting["max"]+"' /></div>";
+            bl += "<div>from <input type='text' name='dfd' class='sliderValue' data-index='0' value='"+local_setting["min"]+"' /> to <input type='text' name='ddsdw' class='sliderValue' data-index='1' value='"+local_setting["max"]+"' /></div>";
             bl += "<div class='slider'></div>";
         }
         
@@ -122,4 +116,56 @@ function init(dat) {
                 }
             });
     });
+    if (dat["text_submit"] === "undefined") {
+        dat["text_submit"] = settings["text_submit"];
+    }
+    $('#filter-box').append("<br/><button name='dd' class='filter-search-submit'>"+dat["text_submit"]+"</button>");
+    $('#filter-box').append("</form>");
+
+    $(".filter-search-check").click(function(){
+        var pos = $(this).position();
+        $(".filter-search-result").css("margin-top",pos.top);
+        $(".filter-search-result").html("<a href='#' class='filter-search-submit'>"+settings["text_show"]+"</a>");
+        $(".filter-search-result").css("display", "block");
+        if ($('.filter-search-check:checked').length == 0) {
+            $(".filter-search-result").fadeOut(1000);
+        }
+    });
+
+    $(".filter-search-caption").click(function(){
+        toggleFields($(this));
+    });
+
+    // submit button
+    $(".filter-search-submit").live('click', function() {
+        var get_params = getQuery();
+        $.get(dat["post_url"], get_params, function(data_result) {
+            console.log(data_result);
+        });
+        return false;
+    });
+}
+
+function getQuery() {
+    var query = {};
+    $('#filter-box').find('.filter-search-block').each(function(){
+        var block = $(this);
+        block.find(".filter-search-fields").each(function() {
+            var block_type = $(this).data('block-type');
+            var ids = [];
+
+            switch (block_type) {
+                case 'checkbox':
+                    $(this).find("input:checked").each(function() {
+                        ids.push($(this).val());
+                    });
+                    break;
+                case 'slider':
+                    break;
+            }
+            query[block.attr('id')] = ids.join();
+        });
+    });
+
+    return query;
 }
