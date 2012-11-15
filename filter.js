@@ -12,12 +12,13 @@ var inidata = {
         "block2":{
             "title":"Screen size",
             "type": "checkbox",
+            "hideBlock": false,
             "items":['11"','13"','14"','15.6"']
         },
         "block3":{
             "title":"Price",
             "type": "slider",
-            "hideBlock": true,
+            "hideBlock": false,
             "min": 200,
             "max": 2000
         }
@@ -113,6 +114,9 @@ function init(dat) {
                     for (var i = 0; i < ui.values.length; ++i) {
                         $("input.sliderValue[data-index=" + i + "]").val(ui.values[i]);
                     }
+                },
+                stop: function(event, ui) {
+                    show_result_block($(this).parents());
                 }
             });
     });
@@ -123,13 +127,7 @@ function init(dat) {
     $('#filter-box').append("</form>");
 
     $(".filter-search-check").click(function(){
-        var pos = $(this).position();
-        $(".filter-search-result").css("margin-top",pos.top);
-        $(".filter-search-result").html("<a href='#' class='filter-search-submit'>"+settings["text_show"]+"</a>");
-        $(".filter-search-result").css("display", "block");
-        if ($('.filter-search-check:checked').length == 0) {
-            $(".filter-search-result").fadeOut(1000);
-        }
+        show_result_block($(this));
     });
 
     $(".filter-search-caption").click(function(){
@@ -171,4 +169,14 @@ function getQuery() {
     });
 
     return query;
+}
+
+function show_result_block(elementObj) {
+    var pos = elementObj.position();
+        $(".filter-search-result").css("margin-top",pos.top);
+        $(".filter-search-result").html("<a href='#' class='filter-search-submit'>"+settings["text_show"]+"</a>");
+        $(".filter-search-result").css("display", "block");
+        if ($('.filter-search-check:checked').length == 0) {
+            $(".filter-search-result").fadeOut(1000);
+        }
 }
