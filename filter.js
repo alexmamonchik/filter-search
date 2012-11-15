@@ -87,7 +87,7 @@ function init(dat) {
             } else {
                 local_setting["step"] = settings["step"];
             }
-            bl += "<div>from <input type='text' name='dfd' class='sliderValue' data-index='0' value='"+local_setting["min"]+"' /> to <input type='text' name='ddsdw' class='sliderValue' data-index='1' value='"+local_setting["max"]+"' /></div>";
+            bl += "<div>from <input type='text' name='from' class='sliderValue' data-index='0' value='"+local_setting["min"]+"' /> to <input type='text' name='to' class='sliderValue' data-index='1' value='"+local_setting["max"]+"' /></div>";
             bl += "<div class='slider'></div>";
         }
         
@@ -161,6 +161,9 @@ function getQuery() {
                     });
                     break;
                 case 'slider':
+                    $(this).find(".sliderValue").each(function() {
+                        ids.push($(this).val());
+                    });
                     break;
             }
             query[block.attr('id')] = ids.join();
