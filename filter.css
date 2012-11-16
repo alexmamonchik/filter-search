@@ -1,0 +1,32 @@
+#filter-box {
+	position: relative;
+	border: 1px solid grey;
+	width: 170px;
+}
+.filter-search-block {
+    
+}
+.filter-search-caption {
+	border-bottom: 1px dotted;
+}
+.filter-search-caption {
+	cursor: pointer;
+}
+.filter-search-result {
+    width: 50px;
+    height: 20px;
+    background-color: lightgrey;
+    display:none;
+    float: right;
+    margin-right: -50px;
+}
+.filter-search-arrow {
+	background-image: url(images/glyphicons-halflings.png);
+	width: 14px;
+	height: 14px;
+	background-position: -313px -119px;
+	display: inline-block;
+}
+.sliderValue {
+	width: 40px;
+}
